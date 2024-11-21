@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ListView?>
+
+<VBox id="root-vbox" prefHeight="400.0" prefWidth="610.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.MainController">
+    <children>
+        <MenuBar>
+            <menus>
+                <Menu text="File">
+                    <items>
+                        <MenuItem fx:id="menuItemClose" text="Close" />
+                    </items>
+                </Menu>
+                <Menu text="Help">
+                    <items>
+                        <MenuItem fx:id="menuItemAbout" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+
+        <VBox prefHeight="200.0" prefWidth="100.0">
+            <children>
+                <HBox id="header" prefHeight="47.0" prefWidth="610.0">
+                    <children>
+                        <Label minWidth="-Infinity" styleClass="header-label" text="ToDo" />
+                        <TextField fx:id="headerTitleField" prefHeight="27.0" prefWidth="339.0" HBox.hgrow="ALWAYS" />
+                        <Label minWidth="-Infinity" styleClass="header-label" text="日付" />
+                        <DatePicker fx:id="headerDatePicker" prefHeight="16.0" prefWidth="100.0" HBox.hgrow="NEVER" />
+                    </children>
+                </HBox>
+
+                <HBox prefHeight="47.0" prefWidth="610.0" alignment="CENTER_RIGHT">
+                    <children>
+                        <Button fx:id="lowPriorityBtn" mnemonicParsing="false" text="低" />
+                        <Button fx:id="mediumPriorityBtn" mnemonicParsing="false" text="中" />
+                        <Button fx:id="highPriorityBtn" mnemonicParsing="false" text="高" />
+                        <Button fx:id="nowTimestampBtn" mnemonicParsing="false" text="現在時刻" />
+                        <Button fx:id="addFiveTimeBtn" mnemonicParsing="false" text="+5" />
+                        <Button fx:id="addTenTimeBtn" mnemonicParsing="false" text="+10" />
+                        <Button fx:id="addBtn" mnemonicParsing="false" text="追加" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+        
+        <!-- ここに todoListVBox を追加 -->
+        <VBox fx:id="todoListVBox" prefHeight="200.0" prefWidth="610.0" />
+
+        <ListView fx:id="taskListView" prefHeight="200.0" prefWidth="610.0" />
+    </children>
+</VBox>
