@@ -19,29 +19,25 @@ public class ToDoManager {
     }
 
     private void addListener(ToDo todo) {
-        todo.titleProperty().addListener((observable, oldValue, newValue) -> 
+        todo.titleProperty().addListener((observable, oldValue, newValue) ->
                 System.out.println("Title changed #" + todo.getId() + " : " + newValue));
-        
-        todo.dateProperty().addListener((observable, oldValue, newValue) -> 
+
+        todo.dateProperty().addListener((observable, oldValue, newValue) ->
                 System.out.println("Date changed #" + todo.getId() + " : " + newValue));
 
-        todo.completedProperty().addListener((observable, oldValue, newValue) -> 
+        todo.completedProperty().addListener((observable, oldValue, newValue) ->
                 System.out.println("Completed changed #" + todo.getId() + " : " + newValue));
     }
 
     public void create(String title, LocalDate date, boolean completed, String priority) {
-        int newId = 0;
-        if (todos.size() > 0) {
-            newId = todos.stream().max((todo1, todo2) -> todo1.getId() - todo2.getId()).get().getId() + 1;
-        }
+        int newId = todos.size() > 0 ? todos.stream().mapToInt(ToDo::getId).max().getAsInt() + 1 : 0;
 
         addNewToDo(newId, title, date, completed, priority);
-
         System.out.println("Added #" + newId);
     }
 
     private void addNewToDo(int id, String title, LocalDate date, boolean completed, String priority) {
-        var todo = new ToDo(id, title, date, completed, priority); // priorityを追加
+        var todo = new ToDo(id, title, date, completed, priority);
         addListener(todo);
         todos.add(todo);
     }

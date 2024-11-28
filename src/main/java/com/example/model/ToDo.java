@@ -15,14 +15,8 @@ public class ToDo {
     private StringProperty title = new SimpleStringProperty();          // タイトル
     private ObjectProperty<LocalDate> date = new SimpleObjectProperty<>(); // 日付
     private BooleanProperty completed = new SimpleBooleanProperty();        // 完了状態
-
-    // 重要度を示すプロパティ
     private StringProperty priority = new SimpleStringProperty();           // 重要度
-
-    // 現在時刻
     private ObjectProperty<LocalDateTime> nowTimestamp = new SimpleObjectProperty<>(LocalDateTime.now());
-
-    // +5分後と+10分後を設定するためのプロパティ
     private ObjectProperty<LocalDateTime> addFiveTime = new SimpleObjectProperty<>();
     private ObjectProperty<LocalDateTime> addTenTime = new SimpleObjectProperty<>();
 
@@ -132,7 +126,6 @@ public class ToDo {
         return addTenTime.get();
     }
 
-    // 現在時刻、+5分、+10分の時間を一度に更新するメソッド
     public void updateTimeProperties() {
         updateNowTimestamp(); // 現在時刻を取得して設定
         setAddFiveTime();     // +5分後を設定
