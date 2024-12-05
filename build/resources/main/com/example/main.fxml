@@ -10,8 +10,9 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import com.example.controller.MainController?>
 
-<VBox id="root-vbox" prefHeight="400.0" prefWidth="610.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.MainController">
+<VBox id="root-vbox" prefHeight="400.0" prefWidth="610.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.MainController">
     <children>
         <MenuBar>
             <menus>
@@ -41,8 +42,8 @@
 
                 <HBox alignment="CENTER_RIGHT" prefHeight="47.0" prefWidth="610.0">
                     <children>
-                        <Label fx:id="clockLabel" text="00:00" style="-fx-font-size: 24px;"/>
-                        <Label fx:id="selectedTimeLabel" text="" style="-fx-font-size: 16px;"/> 
+                        <Label fx:id="clockLabel" text="00:00" style="-fx-font-size: 24px;" />
+                        <Label fx:id="selectedTimeLabel" text="" style="-fx-font-size: 16px;" /> 
                         <Button fx:id="lowPriorityBtn" mnemonicParsing="false" text="低" />
                         <Button fx:id="mediumPriorityBtn" mnemonicParsing="false" text="中" />
                         <Button fx:id="highPriorityBtn" mnemonicParsing="false" text="高" />
@@ -55,13 +56,7 @@
                 </HBox>
             </children>
         </VBox>
-        
-        <!-- ToDoリスト表示用のVBox -->
-        <VBox fx:id="todoListVBox" prefHeight="200.0" prefWidth="610.0" />
-		<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.MvcApp">
-    <Button text="Show Time Picker" onAction="#showTimePicker"/>
-</VBox>
-		
+
         <ListView fx:id="taskListView" prefHeight="200.0" prefWidth="610.0" />
     </children>
 </VBox>

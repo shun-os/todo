@@ -1,130 +1,125 @@
-package com.example.controller;
-
+package com.example;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.util.List;
 
+import com.example.model.ToDo;
 import com.example.model.ToDoManager;
 
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 public class MainController {
+    private final String TODO_ID_PREFIX = "todo-";
     @FXML
-    private Button lowPriorityBtn, mediumPriorityBtn, highPriorityBtn;
+    private MenuItem menuItemAbout;
     @FXML
-    private Button nowButton, fiveMinutesButton, tenMinutesButton, addBtn, setTimeButton;
+    private MenuItem menuItemClose;
     @FXML
-    private Label clockLabel, selectedTimeLabel;
-    @FXML
-    private TextField headerTitleField;
+    private Button addBtn;
     @FXML
     private DatePicker headerDatePicker;
     @FXML
-    private ListView<String> taskListView;
-
-    private String selectedPriority = "medium";
-    private ToDoManager model;
-
+    private TextField headerTitleField;
     @FXML
-    public void initialize() {
-        headerDatePicker.setValue(LocalDate.now());
-        updateClock();
-        startClockUpdate();
-
-        lowPriorityBtn.setOnAction(e -> setPriority("low"));
-        mediumPriorityBtn.setOnAction(e -> setPriority("medium"));
-        highPriorityBtn.setOnAction(e -> setPriority("high"));
-        
-        nowButton.setOnAction(e -> setCurrentTime());
-        fiveMinutesButton.setOnAction(e -> setFutureTime(5));
-        tenMinutesButton.setOnAction(e -> setFutureTime(10));
-        
-        setTimeButton.setOnAction(e -> showTimePicker());
-
+    private VBox todoListVBox;
+    @FXML
+    private ListView<String> taskListView;
+    private ToDoManager model;
+    private void showInfo(String txt) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("アプリの情報");
+        alert.setHeaderText(null);
+        alert.setContentText(txt);
+        alert.showAndWait();
+    }
+    private HBox createToDoHBox(ToDo todo) {
+        // Create View Items
+        var completedCheckBox = new CheckBox();
+        completedCheckBox.setSelected(todo.isCompleted());
+        completedCheckBox.getStyleClass().add("todo-completed");
+        var titleField = new TextField(todo.getTitle());
+        titleField.getStyleClass().add("todo-title");
+        HBox.setHgrow(titleField, Priority.ALWAYS);
+        var datePicker = new DatePicker(todo.getDate());
+        datePicker.getStyleClass().add("todo-date");
+        datePicker.setPrefWidth(105);
+        HBox.setHgrow(datePicker, Priority.NEVER);
+        var deleteBtn = new Button("削除");
+        deleteBtn.getStyleClass().add("todo-delete");
+        var todoItem = new HBox(completedCheckBox, titleField, datePicker, deleteBtn);
+        todoItem.getStyleClass().add("todo-item");
+        todoItem.setId(TODO_ID_PREFIX + todo.getId());
+        // Bind Model to View
+        completedCheckBox.selectedProperty().bindBidirectional(todo.completedProperty());
+        titleField.textProperty().bindBidirectional(todo.titleProperty());
+        datePicker.valueProperty().bindBidirectional(todo.dateProperty());
+        // Event Handler
+        deleteBtn.setOnAction(e -> {
+            model.remove(todo);
+            todoListVBox.getChildren().remove(todoItem); // Remove from view
+        });
+        return todoItem;
+    }
+    public void initModel(ToDoManager manager) {
+        if (this.model != null)
+            throw new IllegalStateException("Model can only be initialized once");
+        this.model = manager;
+        loadTaskList(); // Here you load tasks initially.
+        ObservableList<Node> todoListItems = todoListVBox.getChildren();
+        // Event Handler for adding tasks
         addBtn.setOnAction(e -> {
-            String title = headerTitleField.getText();
-            LocalDate date = headerDatePicker.getValue();
-            model.create(title, date, false, selectedPriority);
-
-            // タスク名をListViewに追加
-            taskListView.getItems().add(title);
-            headerTitleField.clear(); // 入力フィールドをクリア
+            String priority = "medium"; // Default priority or implement priority input
+            model.create(headerTitleField.getText(), headerDatePicker.getValue(), false, priority);
+            headerTitleField.clear();
         });
-    }
-
-
-    private void showTimePicker() {
-    	// 時刻選択の処理をここに実装
-        TextInputDialog timeDialog = new TextInputDialog();
-        timeDialog.setTitle("指定時刻");
-        timeDialog.setHeaderText("時間と分を入力してください（例: 14:30）");
-        LocalTime now = LocalTime.now();
-        timeDialog.setContentText("時刻 (HH:mm) 入力: ");
-
-        timeDialog.showAndWait().ifPresent(input -> {
-            try {
-                LocalTime inputTime = LocalTime.parse(input);
-                if (inputTime.isBefore(now)) {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("エラー");
-                    alert.setHeaderText(null);
-                    alert.setContentText("過去の時刻は指定できません。");
-                    alert.showAndWait();
-                } else {
-                    selectedTimeLabel.setText("選択された時刻: " + inputTime.format(DateTimeFormatter.ofPattern("HH:mm")));
+        // Observe Model to update View
+        model.todosProperty().addListener((ListChangeListener<ToDo>) change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    change.getAddedSubList().forEach(todo -> {
+                        todoListItems.add(createToDoHBox(todo));
+                        loadTaskList(); // Add new items to taskListView
+                    });
                 }
-            } catch (DateTimeParseException e) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.setTitle("エラー");
-                alert.setHeaderText(null);
-                alert.setContentText("無効な時刻形式です。HH:mmの形式で入力してください（例: 14:30）");
-                alert.showAndWait();
+                if (change.wasRemoved()) {
+                    List<String> ids = change.getRemoved().stream()
+                        .map(todo -> TODO_ID_PREFIX + todo.getId())
+                        .toList();
+                    todoListItems.removeIf(node -> ids.contains(node.getId()));
+                    loadTaskList(); // Cleanup UI list
+                }
             }
         });
+        model.loadInitialData(); // Load initial data
     }
-
-    private void setPriority(String priority) {
-        selectedPriority = priority;
-        lowPriorityBtn.setStyle(priority.equals("low") ? "-fx-background-color: lightgray;" : "");
-        mediumPriorityBtn.setStyle(priority.equals("medium") ? "-fx-background-color: lightgray;" : "");
-        highPriorityBtn.setStyle(priority.equals("high") ? "-fx-background-color: lightgray;" : "");
+    private void loadTaskList() {
+        taskListView.getItems().clear(); // Clear the list
+        for (ToDo todo : model.todosProperty()) {
+            // Create formatted text for the task list
+            String expectedText = String.format("%s - %s - %s",
+                    todo.getDate(),
+                    todo.getNowTimestamp().toLocalTime(), // NPC: Be sure this timestamp is what you want to display
+                    todo.getPriority());
+            taskListView.getItems().add(expectedText); // Corrected to add items to the list
+        }
     }
-
-    private void updateClock() {
-        LocalTime now = LocalTime.now();
-        clockLabel.setText(now.format(DateTimeFormatter.ofPattern("HH:mm")));
-    }
-
-    private void startClockUpdate() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                Platform.runLater(this::updateClock);
-            }
-        }).start();
-    }
-
-    private void setCurrentTime() {
-        LocalTime currentTime = LocalTime.now();
-        selectedTimeLabel.setText("選択された時刻: " + currentTime.format(DateTimeFormatter.ofPattern("HH:mm")));
-    }
-
-    private void setFutureTime(int minutes) {
-        LocalTime newTime = LocalTime.now().plusMinutes(minutes);
-        selectedTimeLabel.setText("選択された時刻: " + newTime.format(DateTimeFormatter.ofPattern("HH:mm")));
+    public void initialize() {
+        // Set today's date
+        headerDatePicker.setValue(LocalDate.now());
+        menuItemAbout.setOnAction(e -> showInfo("ToDo App"));
+        menuItemClose.setOnAction(e -> Platform.exit());
     }
 }

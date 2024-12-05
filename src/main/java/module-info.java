@@ -5,4 +5,5 @@ module mvcapp {
     requires javafx.fxml;
 	requires javafx.base;
     opens com.example to javafx.graphics, javafx.fxml;
+    exports com.example; 
 }

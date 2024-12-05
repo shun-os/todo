@@ -10,25 +10,26 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-
 public class MvcApp extends Application {
-
     @Override
     public void start(Stage stage) {
         try {
+            // FXMLファイルのパスを取得する
+            var fxmlPath = getClass().getResource("/com/example/main.fxml");
+            if (fxmlPath == null) {
+                throw new IOException("FXML file not found!");
+            }
             // Create Loader for .fxml
-            var mainViewLoader = new FXMLLoader(getClass().getResource("main.fxml"));
-
+            var mainViewLoader = new FXMLLoader(fxmlPath);
             // Get View
             Parent root = mainViewLoader.load();
-
             // Get Controller
-            MainController mainController = mainViewLoader.getController();
+            MainController mainController = mainViewLoader.getController(); 
             
             // Create and set Model to Controller
             var model = new ToDoManager();
             mainController.initModel(model);
-
+            
             // Build scene and stage to show View on the screen
             var scene = new Scene(root);
             stage.setTitle("ToDo App");

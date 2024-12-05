@@ -1,3 +1,5 @@
+// build.gradle for BuildShip javafx_template
+// https://github.com/sosuisen/javafx-gradle-templates
 plugins {
     id 'application'
     id 'eclipse'
@@ -10,30 +12,25 @@ ext {
     entryPoint = "${packageName}.MvcApp"
     executableName = 'MvcApp'
 }
-
 repositories {
     mavenCentral()
 }
-
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
-
-// JavaFX の設定
 javafx {
-    version = "21"
+    version = "23"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
-
-// Application 設定
 application {
-	 mainClass = entryPoint
+    mainModule = moduleName
+    mainClass = entryPoint
     if (System.getProperty('DEBUG', 'false') == 'true') {
         applicationDefaultJvmArgs = ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"]
     }
+    mainModule = 'mvcapp'
+    mainClass = 'com.example.MvcApp'
 }
-
-// jlinkの設定
 jlink {
     options = ['--strip-debug', '--no-header-files', '--no-man-pages']
     launcher {
