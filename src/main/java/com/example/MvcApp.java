@@ -58,4 +58,3 @@ public class MvcApp extends Application {
         launch();
     }
 }
-}

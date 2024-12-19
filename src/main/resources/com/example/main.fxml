@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import com.example.controller.MainController?>
 
-<VBox id="root-vbox" prefHeight="400.0" prefWidth="610.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.MainController">
+<VBox id="root-vbox" prefHeight="400.0" prefWidth="610.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.MainController">
     <children>
         <MenuBar>
             <menus>
